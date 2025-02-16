@@ -136,83 +136,100 @@ public class DemostoreApiSimulation extends Simulation {
 
 
 
+//Created several setUp-methods with different types of user-test-executions with appropriate scenarios
 
 
-
-  //debug with 1 user
-  //{
-	  //setUp(scn.injectOpen(atOnceUsers(1))).protocols(httpProtocol);
-  //}
-
-
-    //Open model with several users
-    //{
-        //setUp(
-                //scn.injectOpen(
-                        //atOnceUsers(3),
-                        //nothingFor(Duration.ofSeconds(5)),
-                        //rampUsers(10).during(Duration.ofSeconds(20)),
-                        //nothingFor(Duration.ofSeconds(10)),
-                        //constantUsersPerSec(1).during(Duration.ofSeconds(20))))
-                        //.protocols(httpProtocol);
-
-    //}
+  //***Basic simulation for script-debugging - executes Scenarios.defaultScn with Open model of simulation - injects only one user in the system, using http-protocol
+  {
+	  setUp(Scenarios.defaultScn.injectOpen(atOnceUsers(1))).protocols(httpProtocol);
+  }
 
 
-    //Closed model with several users
-    //{
-        //setUp(
-                //scn.injectClosed(
-                        //constantConcurrentUsers(5).during(Duration.ofSeconds(20)),
-                        //rampConcurrentUsers(1). to(5).during(Duration.ofSeconds(20))))
-                        //.protocols(httpProtocol);
-
-    //}
-
-
-    //Throttle simulation
+    //***Regular Simulation -  executes Scenarios.defaultScn with Open model using http-protocol
     //{
         //setUp(
                 //Scenarios.defaultScn.injectOpen(
-                                //constantUsersPerSec(2).during(Duration.ofMinutes(3)))
+                        //Inject 3 users at start one time
+                        //atOnceUsers(3),
+                        //Get pause for 5 seconds
+                        //nothingFor(Duration.ofSeconds(5)),
+                        //Sequentially inject up to 10 users and hold them on 20 seconds then decrease sequentially
+                        //rampUsers(10).during(Duration.ofSeconds(20)),
+                        //Get pause for 10 seconds
+                        //nothingFor(Duration.ofSeconds(10)),
+                        //Inject 1 user per second sequentially, hold them during 20 seconds then decrease count of users sequentially
+                        //constantUsersPerSec(1).during(Duration.ofSeconds(20))))
+                //.protocols(httpProtocol);
+
+    //}
+
+
+    //***Closed model simulation - executes Scenarios.noAdminsScn with Closed model using http-protocol
+    //{
+        //setUp(
+                //Scenarios.noAdminsScn.injectClosed(
+                        //Inject and hold 5 users (concurrent with another 5 users) in the system during 20 seconds
+                        //constantConcurrentUsers(5).during(Duration.ofSeconds(20)),
+                        //Inject 1 user in the system and increase it to 5 users during 20 seconds
+                        //rampConcurrentUsers(1). to(5).during(Duration.ofSeconds(20))))
+                //.protocols(httpProtocol);
+
+    //}
+
+
+    //***Throttle simulation - executes ScenarioBuilder-class named "scenario" with Open model using http-protocol with 1 user per second during 3 minutes and throttling
+    //{
+        //setUp(
+                //Inject 2 users per second sequentially, hold them during 3 minutes then decrease count of users sequentially
+                //Scenarios.defaultScn.injectOpen(
+                        //constantUsersPerSec(2).during(Duration.ofMinutes(3)))
                         //.protocols(httpProtocol)
                         //.throttle(
+                                //Reach 10 requests per seconds in 30 second interval
                                 //reachRps(10).in(Duration.ofSeconds(30)),
+                                //Hold this situation for 60 seconds
                                 //holdFor(Duration.ofSeconds(60)),
+                                //Jump to 20 requests per second immediately
                                 //jumpToRps(20),
+                                //Hold this situation for 60 seconds
                                 //holdFor(Duration.ofSeconds(60))))
+                //Maximal duration of test simulation is 3 minutes
                 //.maxDuration(Duration.ofMinutes(3));
     //}
 
 
-    //debug with 5 users
+    //***Simulation with Scenarios class and system parameters by default - execute Open model load test with defaultPurchase scenario actions
     //{
         //setUp(
                 //Scenarios.defaultScn
+                        //Injects USER_COUNT of users in the system sequentially, hold them during RAMP_DURATION seconds using http-protocol
                         //.injectOpen(rampUsers(USER_COUNT).during(RAMP_DURATION))
                         //.protocols(httpProtocol));
-
     //}
 
-    //Sequence of scenarios
+
+    //***Sequential executing of scenarios-class - first is defaultScn, second - noAdminsScn after it
     //{
         //setUp(
+                //Execute Scenarios.defaultScn first
                 //Scenarios.defaultScn
+                        //Inject USER_COUNT users sequentially and hold them on RAMP_DURATION seconds using http-protocol
                         //.injectOpen(rampUsers(USER_COUNT).during(RAMP_DURATION)).protocols(httpProtocol)
+                        //Then execute Scenarios.noAdminsScn
                         //.andThen(
                                 //Scenarios.noAdminsScn
+                                        //Inject users sequentially to 5, hold 5 users of 10 seconds using http-protocol
                                         //.injectOpen(rampUsers(5).during(Duration.ofSeconds(10))).protocols(httpProtocol)));
     //}
 
-    //Parallel scenarios
-    {
-        setUp(
-                Scenarios.defaultScn.injectOpen(rampUsers(USER_COUNT).during(RAMP_DURATION)),
-                Scenarios.noAdminsScn.injectOpen(rampUsers(5).during(Duration.ofSeconds(30))))
-                .protocols(httpProtocol);
-    }
 
-
-
-
+    //***Parallel executing scenarios-class - defaultScn and noAdminsScn at the same time using http-protocol
+    //{
+        //setUp(
+                //Inject USER_COUNT users sequentially during RAMP_DURATION seconds period
+                //Scenarios.defaultScn.injectOpen(rampUsers(USER_COUNT).during(RAMP_DURATION)),
+                //Inject 5 users during 30 seconds period sequentially
+                //Scenarios.noAdminsScn.injectOpen(rampUsers(5).during(Duration.ofSeconds(30))))
+                //.protocols(httpProtocol);
+    //}
 }
