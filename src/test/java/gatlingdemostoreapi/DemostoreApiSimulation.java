@@ -1,4 +1,4 @@
-// Created gatlingdemostore with classes for load testing of Gatling-demo-store-api
+// Created gatlingdemostoreapi with classes for load testing of Gatling-demo-store-api
 package gatlingdemostoreapi;
 
 
@@ -17,7 +17,7 @@ import static io.gatling.javaapi.http.HttpDsl.*;
 //Created class DemostoreApiSimulation with variables and scenarios for simulations
 public class DemostoreApiSimulation extends Simulation {
 
-    //Created HttpProtocolBuilder for http protocol, address and headers
+  //Created HttpProtocolBuilder for http protocol, address and headers
   private HttpProtocolBuilder httpProtocol = http
     .baseUrl("https://demostore.gatling.io")
     .header("Cache-Control", "no-cache")
@@ -25,7 +25,7 @@ public class DemostoreApiSimulation extends Simulation {
 
 
 
-    //Announced several variables USER_COUNT, RAMP_DURATION and TEST_DURATION used in test-scenarios by appropriate way
+  //Announced several variables USER_COUNT, RAMP_DURATION and TEST_DURATION used in test-scenarios by appropriate way
   private static final int USER_COUNT = Integer.parseInt(System.getProperty("USERS", "5"));
 
   private static final Duration RAMP_DURATION =

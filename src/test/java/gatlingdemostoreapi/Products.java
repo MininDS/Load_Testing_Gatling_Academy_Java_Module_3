@@ -1,25 +1,35 @@
+//Created class Categories in gatlingdempstoreapi package
 package gatlingdemostoreapi;
 
+
+//Imported some needed Java-libs for code-execution
 import io.gatling.javaapi.core.ChainBuilder;
 import io.gatling.javaapi.core.FeederBuilder;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
 import static io.gatling.javaapi.core.CoreDsl.*;
 import static io.gatling.javaapi.http.HttpDsl.http;
 
+
+
+//Created class Products with feeders and methods for working with Products api
 public class Products {
+
+    //Created feeder with products list in data/products.csv
     public static FeederBuilder.Batchable<String> productsFeeder =
             csv("data/products.csv").circular();
 
+
+    //Created chainbuilder class with listall method and its checks
     public static ChainBuilder listAll =
             exec(http("List all products")
                     .get("/api/product")
                     .check(jmesPath("[*]").ofList().saveAs("allProducts")));
 
+
+    //Created chainbuilder class with method list and its checks
     public static ChainBuilder list =
             exec(http("List products")
                     .get("/api/product?category=7")
@@ -27,6 +37,7 @@ public class Products {
                     .check(jmesPath("[*].id").ofList().saveAs("allProductIds")));
 
 
+    //Created chainbuilder-class with method get - get product by its id
     public static ChainBuilder get =
             exec(session -> {
                 List<Integer> allProductIds = session.getList("allProductIds");
@@ -52,6 +63,7 @@ public class Products {
     //);
 
 
+    //Created chainbuilder class with method update - put needed new product after authentication
     public static ChainBuilder update =
             exec(Authentication.authenticate)
 
@@ -73,6 +85,7 @@ public class Products {
                             .check(jmesPath("price").isEL("#{productPrice}")));
 
 
+    //Created chainbuilder class with method create - post needed new product from feeder after authentication
     public static ChainBuilder create =
             exec(Authentication.authenticate)
 
